@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+  <meta charset="utf-8">
+  <title>tutorial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta http-equiv="Content-Language" content="ja">
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
+  <style type="text/css">
+    body{
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .wrapper{
+      padding: 40px;
+      font-family: roboto;
+      letter-spacing: 0.08em;
+    }
+
+    h1{
+      font-size: 30px;
+      color: #555;
+    }
+
+    h2{
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #666;
+
+    }
+
+    .demo{
+      margin: 50px 0;
+    }
+
+    .list{
+      margin-top: 20px;
+      padding: 0;
+    }
+
+    .list li{
+      list-style: none;
+      margin-bottom: 20px;
+
+    }
+
+    .list li a{
+      color: #555;
+      text-decoration: none;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+    }
+
+    .list li a:hover{
+      opacity: 1.0;
+    }
+  </style>
+  <script type="text/javascript">
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', './config.json', true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status === 200) {
+        setData(xhr.response);
+      } else {
+        // setData(xhr.response);
+      }
+    };
+    xhr.send();
+
+    function setData(data){
+      console.log(data.files);
+      var $ul = document.getElementById('list');
+
+      for(let i = 0; i < data.files.length; i++){
+        var name = data.files[i];
+        var $li = document.createElement('li');
+        var $a = document.createElement('a');
+        $li.appendChild($a);
+        $a.innerText = name;
+        $a.href= './' + name;
+        $ul.appendChild($li);
+      }
+
+    }
+  </script>
+</head>
+<body>
+<div class="wrapper" id="wrapper">
+  <h1>RAYMARCHING DEMO</h1>
+
+  <div class="demo">
+    <h2>DEMO</h2>
+    <ul class='list' id='list'>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
