@@ -1,19 +1,24 @@
 
-// uniform vec2  mouse;
 
 const vec3 center = vec3(0.0);
 const float radius = 1.0;
 const vec3 light_position = vec3(2.0, -5.0, 3.0);
 
+
 float mapTheWorld(in vec3 p)
 {
-    const float disS = 4.0;
-    float displacement = sin(disS * p.x + time) * sin(disS * p.y + time) * sin(disS * p.z + time) * 0.25;
-    float sphere_0 = sdSphere(p, center, radius);
+    const float disS = 8.0;
+    vec3 samplePoint = p;
+    samplePoint = (rotateY(time) * vec4(samplePoint, 1.0)).xyz;
+    
+    // float displacement = sin(disS * p.x + time) * sin(disS * p.y + time) * sin(disS * p.z + time) * 0.25;
+    // displacement *= sin(time) * 0.5 + 0.5;
+    float box_0 = sdBox(samplePoint, center, vec3(radius*0.8));
+    float sphere_0 = sdSphere(samplePoint, center, radius);
 
     // Later we might have sphere_1, sphere_2, cube_3, etc...
 
-    return sphere_0 + displacement;
+    return subtract( sphere_0, box_0 );
 }
 
 vec3 calculateNormal(in vec3 p)
@@ -74,7 +79,7 @@ void main(void){
 
   vec3 camera_position = vec3(0.0, 0.0, -3.0);
   vec3 ro = camera_position;  // ray's origin
-  vec3 rd = vec3(p, 1.0);  // ray's direction
+  vec3 rd = normalize(vec3(p, 1.0));  // ray's direction
 
   vec3 shaded_color = rayMarch(ro, rd);
 

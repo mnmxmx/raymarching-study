@@ -1,6 +1,5 @@
 import vertexShader from './glsl/output.vert';
 import fragmentShader from './glsl/output.frag';
-
 import _WebGL from '../../common/WebGL';
 
 export default class Webgl extends _WebGL{

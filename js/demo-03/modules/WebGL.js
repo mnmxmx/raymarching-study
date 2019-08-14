@@ -1,6 +1,5 @@
 import vertexShader from './glsl/output.vert';
 import fragmentShader from './glsl/output.frag';
-
 import _WebGL from '../../common/WebGL';
 
 export default class Webgl extends _WebGL{
@@ -20,6 +19,7 @@ export default class Webgl extends _WebGL{
   
 
   render(){
+    super.render();
     this.uniforms.time.value = (new Date().getTime() - this.startTime) * 0.002;
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);

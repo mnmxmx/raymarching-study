@@ -7,9 +7,8 @@ requireDir('./gulp/tasks');
 
 
 gulp.task('watch', function(){
-  gulp.watch('./js/**/*.js', ['js']);
+  gulp.watch('./js/**/*', ['js']);
   gulp.watch('./html/**/*.html', ['html']);
-
 });
 
 

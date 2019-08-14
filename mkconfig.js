@@ -7,7 +7,7 @@ var config = {
 function getInfo (callback) {  
   fs.readdir('./js/', (err, files) => {
     files.forEach(file => {
-      if(file !== '.DS_Store') {
+      if(file !== '.DS_Store' && file !== "common") {
         config.files.push(file);
       }
     });
