@@ -1,5 +1,6 @@
 import commonFragmentShader from './glsl/common-func.frag';
-import Mouse from "./Mouse.js";
+import Mouse from "./Mouse";
+import Wheel from "./Wheel";
 
 export default class WebGL{
     constructor(props){
@@ -21,6 +22,10 @@ export default class WebGL{
           $canvas: this.$canvas
         });
 
+        this.wheel = new Wheel();
+
+        const self = this;
+
         this.uniforms = {
             time: {
                 value: 0,
@@ -36,6 +41,13 @@ export default class WebGL{
               value: this.mouse.mousePos,
               location: null,
               type: 'v2'
+            },
+            wheel: {
+              get value(){
+                return self.wheel.wheel
+              },
+              location: null,
+              type: 'f'
             },
             ...props.uniforms
         };
@@ -103,9 +115,27 @@ export default class WebGL{
           
           return shader;
         }else{
-          console.error(this.gl.getShaderInfoLog(shader));
-          console.warn(this.gl.getShaderInfoLog(shader));
+          console.warn( 
+            'gl.getShaderInfoLog()', 
+            type === this.gl.VERTEX_SHADER ? 'vertex' : 'fragment', 
+            this.gl.getShaderInfoLog( shader ), 
+            this.addLineNumbers( text ) 
+          );
         }
+    }
+
+    addLineNumbers( string ) {
+
+      var lines = string.split( '\n' );
+    
+      for ( var i = 0; i < lines.length; i ++ ) {
+    
+        lines[ i ] = ( i + 1 ) + ': ' + lines[ i ];
+    
+      }
+    
+      return lines.join( '\n' );
+    
     }
 
     createProgram(vertex, fragment){
@@ -160,12 +190,20 @@ export default class WebGL{
             case 'v2':
               this.gl.uniform2fv(uniform.location, uniform.value);
               break;
+            case 'v3':
+              this.gl.uniform3fv(uniform.location, uniform.value);
+              break;
+            case 'v4':
+              this.gl.uniform4fv(uniform.location, uniform.value);
+              break;
           }
         }
     }
 
     render(){
       this.mouse.render();
+      this.wheel.render();
+
     }
 
     resize(){

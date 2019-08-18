@@ -29,7 +29,7 @@ float expFog(float d, float density) {
 
 float mapTheWorld(in vec3 p)
 {
-    const float disS = 2.4;
+    const float disS = 2.0;
     vec3 samplePoint = p;
     // samplePoint = (rotateY(time) * vec4(samplePoint, 1.0)).xyz;
     
@@ -82,7 +82,7 @@ vec3 rayMarch(in vec3 ro, in vec3 rd)
             // 0..1
             float diffuse_intensity = max(0.0, dot(normal, direction_to_light));
 
-            vec3 color = mix(vec3(1.0, 0.95, 0.9), vec3(1.0, 0.75, 0.95), diffuse_intensity);
+            vec3 color = mix(vec3(1.0, 0.92, 0.88), vec3(1.0, 0.75, 0.95), diffuse_intensity);
 
             float fog_intensity = expFog(total_distance_traveled, 0.03);
 
@@ -105,7 +105,7 @@ void main(void){
   vec2 p = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
 
 
-  vec3 camera_position = vec3(mouse * 3.0, -3.0 + time);
+  vec3 camera_position = vec3(mouse * 1.0, -3.0 - wheel * 0.01 + time);
   vec3 ro = camera_position;  // ray's origin
   vec3 rd = normalize(vec3(p, 1.0));  // ray's direction
 
