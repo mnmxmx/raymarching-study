@@ -52,15 +52,15 @@ vec3 rayMarch(in vec3 ro, in vec3 rd)
             // return vec3(1.0, 0.0, 0.0);
             vec3 normal = calculateNormal(current_position);
 
-            vec3 direction_to_light = normalize(current_position - light_position);
+            vec3 directionToLight = normalize(current_position - light_position);
 
             // Remember, each component of the normal will be in 
             // the range -1..1, so for the purposes of visualizing
             // it as an RGB color, let's remap it to the range
             // 0..1
-            float diffuse_intensity = max(0.0, dot(normal, direction_to_light));
+            float diffuseIntensity = max(0.0, dot(normal, directionToLight));
 
-            return mix(vec3(1.0, 0.95, 0.9), vec3(1.0, 0.8, 1.0), diffuse_intensity);
+            return mix(vec3(1.0, 0.95, 0.9), vec3(1.0, 0.8, 1.0), diffuseIntensity);
         }
 
         if (total_distance_traveled > MAXIMUM_TRACE_DISTANCE)

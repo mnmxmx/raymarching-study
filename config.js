@@ -1,1 +1,1 @@
-module.exports = {"files":["01_distortion","02_boolean","03_repetition","04_metaball"]}
+module.exports = {"files":["01_distortion","02_boolean","03_repetition","04_metaball","05"]}

@@ -5,15 +5,40 @@ const vec3 center = vec3(0.0);
 const float radius = 1.0;
 const vec3 light_position = vec3(2.0, -5.0, 3.0);
 
+const vec3 bgColor = vec3(0.9);
+
 float mapTheWorld(in vec3 p)
 {
-    const float disS = 4.0;
-    float displacement = sin(disS * p.x + time) * sin(disS * p.y + time) * sin(disS * p.z + time) * 0.25;
-    float sphere_0 = sdSphere(p, center, radius);
+    vec3 baseSize = vec3(2.0, 0.02, 2.0);
+    float round = 0.1;
+    float base = sdBox(p, center, baseSize);
 
+    float box = sdBox(p, center + vec3(0.0, 1.01, 0.0), vec3(1.0));
     // Later we might have sphere_1, sphere_2, cube_3, etc...
 
-    return sphere_0 + displacement;
+    return unite(box, base);
+}
+
+// simple ambient occlusion
+vec4 genAmbientOcclusion(vec3 ro, vec3 rd)
+{
+    vec4 totao = vec4(0.0);
+    float sca = 1.0;
+
+    for (int aoi = 0; aoi < 5; aoi++)
+    {
+        float hr = 0.01 + 0.02 * float(aoi * aoi);
+        vec3 aopos = ro + rd * hr;
+        float dd = mapTheWorld(aopos);
+        float ao = clamp(-(dd - hr), 0.0, 1.0);
+        totao += ao * sca * vec4(1.0, 1.0, 1.0, 1.0);
+        sca *= 0.75;
+    }
+
+    const float aoCoef = 0.5;
+    totao.w = 1.0 - clamp(aoCoef * totao.w, 0.0, 1.0);
+
+    return totao;
 }
 
 vec3 calculateNormal(in vec3 p)
@@ -32,7 +57,7 @@ vec3 calculateNormal(in vec3 p)
 vec3 rayMarch(in vec3 ro, in vec3 rd)
 {
     float total_distance_traveled = 0.0;
-    const int NUMBER_OF_STEPS = 32;
+    const int NUMBER_OF_STEPS = 255;
     const float MINIMUM_HIT_DISTANCE = 0.01;
     const float MAXIMUM_TRACE_DISTANCE = 1000.0;
 
@@ -49,13 +74,15 @@ vec3 rayMarch(in vec3 ro, in vec3 rd)
 
             vec3 directionToLight = normalize(current_position - light_position);
 
-            // Remember, each component of the normal will be in 
-            // the range -1..1, so for the purposes of visualizing
-            // it as an RGB color, let's remap it to the range
-            // 0..1
-            float diffuseIntensity = max(0.0, dot(normal, directionToLight));
+            float diffuseIntensity = dot(normal, directionToLight) * 0.5 + 0.5;
 
-            return mix(vec3(1.0, 0.95, 0.9), vec3(1.0, 0.8, 1.0), diffuseIntensity);
+            vec3 color = mix(vec3(1.0, 0.9, 0.8), vec3(1.0), diffuseIntensity);
+
+            vec4 ao = genAmbientOcclusion(current_position, normal);
+
+            color -= ao.xyz * ao.w;
+
+            return color;
         }
 
         if (total_distance_traveled > MAXIMUM_TRACE_DISTANCE)
@@ -64,20 +91,17 @@ vec3 rayMarch(in vec3 ro, in vec3 rd)
         }
         total_distance_traveled += distance_to_closest;
     }
-    return vec3(1.0);
+    return bgColor;
 }
 
+
 void main(void){
+    vec3 cameraPos = vec3(8.0);
+    cameraPos = (rotateY(time * 0.2) * vec4(cameraPos, 1.0)).xyz;
+    pc camera = setCamera(45.0, cameraPos, center);
 
-  vec2 p = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
+    vec3 color = rayMarch(camera.origin, camera.dir);
 
-
-  vec3 camera_position = vec3(0.0, 0.0, -3.0);
-  vec3 ro = camera_position;  // ray's origin
-  vec3 rd = vec3(p, 1.0);  // ray's direction
-
-  vec3 shaded_color = rayMarch(ro, rd);
-
-  gl_FragColor = vec4(shaded_color, 1.0);
+    gl_FragColor = vec4(color, 1.0);
 
 }

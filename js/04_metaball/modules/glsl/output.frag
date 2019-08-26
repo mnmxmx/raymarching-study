@@ -125,7 +125,7 @@ vec3 rayMarch(in vec3 ro, in vec3 rd)
             // return vec3(1.0, 0.0, 0.0);
             vec3 normal = calculateNormal(current_position);
 
-            // vec3 direction_to_light = normalize(current_position - light_position);
+            // vec3 directionToLight = normalize(current_position - light_position);
 
             // vec3 hemiColor = vec3(0.0);
             // hemiColor += calcIrradiance_hemi(normal, hemiLightPos_1, hemiLight_g, hemiLight_s_1) * 0.5;
@@ -148,7 +148,7 @@ vec3 rayMarch(in vec3 ro, in vec3 rd)
             color *= dirColor;
             color += specular * 0.2;
 
-            // color *= diffuse_intensity;
+            // color *= diffuseIntensity;
 
             float fog_intensity = expFog(total_distance_traveled, 0.03);
 

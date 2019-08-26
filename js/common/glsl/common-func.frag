@@ -7,6 +7,42 @@ uniform float wheel;
 
 const float PI = 3.14159265359;
 
+struct pc { // perspective camera
+    vec3 origin;
+    vec3 dir;
+};
+
+mat3 lookAt(vec3 eye, vec3 center, vec3 up) {
+    // Based on gluLookAt man page
+    vec3 f = normalize(center - eye);
+    vec3 s = normalize(cross(f, up));
+    vec3 u = cross(s, f);
+    return mat3(s, u, -f);
+}
+
+pc setCamera(float fov, vec3 ro, vec3 centerPos){
+    vec2 xy = gl_FragCoord.xy - resolution / 2.0;
+    float z = resolution.y / tan(radians(fov) / 2.0);
+    vec3 viewDir = normalize(vec3(xy, -z));
+    mat3 viewToWorld = lookAt(ro, centerPos, vec3(0.0, 1.0, 0.0));
+    
+    vec3 worldDir = viewToWorld * viewDir;
+
+    return pc(ro, worldDir);
+}
+
+mat4 rotateX(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
+
+    return mat4(
+        vec4(1, 0, 0, 0),
+        vec4(0, c, -s, 0),
+        vec4(0, s, c, 0),
+        vec4(0, 0, 0, 1)
+    );
+}
+
 mat4 rotateY(float theta) {
     float c = cos(theta);
     float s = sin(theta);
@@ -19,6 +55,32 @@ mat4 rotateY(float theta) {
     );
 }
 
+mat4 rotateZ(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
+
+    return mat4(
+        vec4(c, -s, 0, 0),
+        vec4(s, c, 0, 0),
+        vec4(0, 0, 1, 0),
+        vec4(0, 0, 0, 1)
+    );
+}
+
+float sdPlaneX(in vec3 p, in float x)
+{
+    return distance(p,vec3(x,p.y,p.z));
+}
+
+float sdPlaneY(in vec3 p, in float y)
+{
+    return distance(p,vec3(p.x,y,p.z));
+}
+
+float sdPlaneZ(in vec3 p, in float z)
+{
+    return distance(p,vec3(p.x,p.y,z));
+}
 
 
 float sdSphere(in vec3 p, in vec3 c, float r)
@@ -62,3 +124,4 @@ float smoothIntersection( float d1, float d2, float k ) {
     float h = clamp( 0.5 - 0.5*(d2-d1)/k, 0.0, 1.0 );
     return mix( d2, d1, h ) + k*h*(1.0-h); 
 }
+
