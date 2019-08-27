@@ -22,10 +22,6 @@ float sdRoundBox_repeat( vec3 p, vec3 c, vec3 b, float r )
          + min(max(d.x,max(d.y,d.z)),0.0); // remove this line for an only partially signed sdf 
 }
 
-float expFog(float d, float density) {
-	float dd = d * density;
-	return exp(-dd * dd);
-}
 
 float mapTheWorld(in vec3 p)
 {
@@ -65,16 +61,16 @@ vec3 rayMarch(in vec3 ro, in vec3 rd)
 
     for (int i = 0; i < NUMBER_OF_STEPS; ++i)
     {
-        vec3 current_position = ro + total_distance_traveled * rd;
+        vec3 currentPos = ro + total_distance_traveled * rd;
 
-        float distance_to_closest = mapTheWorld(current_position);
+        float distance_to_closest = mapTheWorld(currentPos);
 
         if (distance_to_closest < MINIMUM_HIT_DISTANCE) 
         {
             // return vec3(1.0, 0.0, 0.0);
-            vec3 normal = calculateNormal(current_position);
+            vec3 normal = calculateNormal(currentPos);
 
-            vec3 directionToLight = normalize(current_position - light_position);
+            vec3 directionToLight = normalize(currentPos - light_position);
 
             // Remember, each component of the normal will be in 
             // the range -1..1, so for the purposes of visualizing

@@ -88,6 +88,15 @@ float sdSphere(in vec3 p, in vec3 c, float r)
     return length(p - c) - r;
 }
 
+
+float sdTorus( vec3 p, vec3 c, vec2 t )
+{
+  vec3 pos = p - c;
+  vec2 q = vec2(length(pos.xz)-t.x,pos.y);
+  return length(q)-t.y;
+}
+
+
 float sdBox( vec3 p, vec3 c, vec3 b )
 {
   vec3 d = abs(p - c) - b;
@@ -124,4 +133,11 @@ float smoothIntersection( float d1, float d2, float k ) {
     float h = clamp( 0.5 - 0.5*(d2-d1)/k, 0.0, 1.0 );
     return mix( d2, d1, h ) + k*h*(1.0-h); 
 }
+
+float expFog(float d, float density) {
+	float dd = d * density;
+	return exp(-dd * dd);
+}
+
+
 

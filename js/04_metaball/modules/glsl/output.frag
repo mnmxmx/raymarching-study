@@ -19,11 +19,6 @@ float numBlobs = float(NUM_BLOBS);
 
 float smoothIntensity = 0.8;
 
-float expFog(float d, float density) {
-	float dd = d * density;
-	return exp(-dd * dd);
-}
-
 vec3 blobPos(int i, bStruct blob){
     float radian = 50.0 * PI/numBlobs * float(i);
     vec3 pos = vec3(
@@ -116,16 +111,16 @@ vec3 rayMarch(in vec3 ro, in vec3 rd)
 
     for (int i = 0; i < NUMBER_OF_STEPS; ++i)
     {
-        vec3 current_position = ro + total_distance_traveled * rd;
+        vec3 currentPos = ro + total_distance_traveled * rd;
 
-        vec4 distance_to_closest = mapTheWorld(current_position);
+        vec4 distance_to_closest = mapTheWorld(currentPos);
 
         if (distance_to_closest.w < MINIMUM_HIT_DISTANCE) 
         {
             // return vec3(1.0, 0.0, 0.0);
-            vec3 normal = calculateNormal(current_position);
+            vec3 normal = calculateNormal(currentPos);
 
-            // vec3 directionToLight = normalize(current_position - light_position);
+            // vec3 directionToLight = normalize(currentPos - light_position);
 
             // vec3 hemiColor = vec3(0.0);
             // hemiColor += calcIrradiance_hemi(normal, hemiLightPos_1, hemiLight_g, hemiLight_s_1) * 0.5;
@@ -174,9 +169,9 @@ void main(void){
   vec3 ro = camera_position;  // ray's origin
   vec3 rd = normalize(vec3(p, 1.0));  // ray's direction
 
-  vec3 shaded_color = rayMarch(ro, rd);
-  shaded_color = pow(shaded_color, vec3(1.0 / gamma));
+  vec3 color = rayMarch(ro, rd);
+  color = pow(color, vec3(1.0 / gamma));
 
-  gl_FragColor = vec4(shaded_color, 1.0);
+  gl_FragColor = vec4(color, 1.0);
 
 }
