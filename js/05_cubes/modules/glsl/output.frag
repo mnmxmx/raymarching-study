@@ -5,42 +5,63 @@ const vec3 center = vec3(0.0);
 const float radius = 1.0;
 vec3 light_position = normalize(vec3(-80, 50, 50));
 
-const vec3 cubeColor = vec3(1.0, 0.8, 0.8);
+const vec3 cubeColor = vec3(1.0, 0.98, 0.95);
+const vec3 shadowColor = vec3(1.0, 0.6, 0.7);
 const vec3 bgColor = cubeColor;
 
 
-float gamma = 1.6;
+float gamma = 0.8;
 
-vec3 trans(vec3 p){
-    float interval = 2.0;
+vec3 trans(vec3 p, float interval){
     return mod(p, interval) - interval/2.0;
 }
 
 float sdBox_repeat(in vec3 p, in vec3 c, vec3 b)
 {
-    vec3 _p = trans(p - c);
+    vec3 _p = p - c;
+    float interval = PI;
+
+    float rotateDist = (mod((_p.x) / interval, 2.0) > 1.0) ? -1.0 : 1.0;
+
+    float offsetX = _p.x / interval;
+    offsetX = offsetX - fract(offsetX);
+
+    float _time2 = time - offsetX * 0.2;
+    float _time = _time2;
+    _time = min(1.0, mod(_time, 1.0) * 1.0);
+
+    _time = cubicInOut(_time);
+
+    _time *= PI / 2.0;
+    _time = _time - (rotateDist + 1.0) * PI / 4.0;
+
+     float offsetZ = b.z * ((_time2 - fract(_time2)) * 2.0);
+    _p.z -= offsetZ * rotateDist;
+
+    _p.xz = mod(_p.xz, interval) - interval/2.0;
+
+    // rotation
     _p.y = p.y - c.y;
+    _p.yz += b.yz;
+    _p = (rotateX(_time * rotateDist) * vec4(_p, 1.0)).xyz;
+    _p.yz -= b.yz;
+    
     vec3 d = abs(_p) - b;
     return length(max(d,0.0))
          + min(max(d.x,max(d.y,d.z)),0.0);
 }
 
-float mapTheWorld(vec3 p)
+float mapTheWorld(in vec3 p)
 {
-    vec3 baseSize = vec3(10.0, 0.02, 10.0);
-    vec3 cubeSize = vec3(0.4);
-    float round = 0.1;
+    vec3 baseSize = vec3(100.0, 0.02, 100.0);
+    vec3 cubeSize = vec3(PI / 8.0);
+    // float round = 0.1;
     float base = sdBox(p, center, baseSize);
 
     p = (rotateY(0.2) * vec4(p, 1.0)).xyz;
 
     float box = sdBox_repeat(p, center + vec3(1.0, cubeSize.y + baseSize.y, 1.0), cubeSize);
 
-    // p = (rotateZ(time * 0.2) * vec4(p, 1.0)).xyz;
-
-    // float torus = sdTorus(p, vec3(0.0), cubeSize.yx);
-
-    // Later we might have sphere_1, sphere_2, cube_3, etc...
 
     return unite(box, base);
 }
@@ -83,17 +104,14 @@ float getSoftShadow(vec3 ro, vec3 rd, float k){
     return 1.0 - shadowCoef + r * shadowCoef;
 }
 
-vec3 calculateNormal(in vec3 p)
+// http://iquilezles.org/www/articles/normalsSDF/normalsSDF.htm
+vec3 calculateNormal( in vec3 p )
 {
-    const vec3 small_step = vec3(0.001, 0.0, 0.0);
-
-    float gradient_x = mapTheWorld(p + small_step.xyy) - mapTheWorld(p - small_step.xyy);
-    float gradient_y = mapTheWorld(p + small_step.yxy) - mapTheWorld(p - small_step.yxy);
-    float gradient_z = mapTheWorld(p + small_step.yyx) - mapTheWorld(p - small_step.yyx);
-
-    vec3 normal = vec3(gradient_x, gradient_y, gradient_z);
-
-    return normalize(normal);
+    vec2 e = vec2(1.0,-1.0)*0.5773*0.0005;
+    return normalize( e.xyy*mapTheWorld( p + e.xyy ) + 
+					  e.yyx*mapTheWorld( p + e.yyx ) + 
+					  e.yxy*mapTheWorld( p + e.yxy ) + 
+					  e.xxx*mapTheWorld( p + e.xxx ) );
 }
 
 vec3 rayMarch(in vec3 ro, in vec3 rd)
@@ -114,15 +132,18 @@ vec3 rayMarch(in vec3 ro, in vec3 rd)
             // return vec3(1.0, 0.0, 0.0);
             vec3 normal = calculateNormal(currentPos);
 
-            float diffuseIntensity = max(0.0, dot(normal, light_position));
+            float lighting = max(0.0, dot(normal, light_position));
+
+            float diffuseIntensity = lighting;
 
             diffuseIntensity = 0.4 + 0.6 * diffuseIntensity;
 
-            float shadow = getSoftShadow(currentPos + normal * 0.001, light_position, 4.0);
+            float shadow = getSoftShadow(currentPos + normal * 0.001, light_position, 2.0);
             diffuseIntensity = min(shadow, diffuseIntensity);
 
             vec4 ao = genAmbientOcclusion(currentPos, normal);
-            diffuseIntensity *= 1.0 - ao.x * ao.w * 2.0;
+            // float anbient
+            diffuseIntensity *= mix((1.0 - ao.x * ao.w * 2.0), 1.0, lighting);
 
             diffuseIntensity = max(0.0, diffuseIntensity);
 
@@ -130,14 +151,22 @@ vec3 rayMarch(in vec3 ro, in vec3 rd)
 
             diffuseIntensity = min(1.0, diffuseIntensity);
 
-            vec3 color = mix(vec3(1.0, 0.5, 0.6), cubeColor, diffuseIntensity);
+            vec3 color = mix(shadowColor, cubeColor, diffuseIntensity);
+
+            // color = vec3((1.0 - ao.x * ao.w * 2.0));
             
 
-            float fog_intensity = expFog(total_distance_traveled, 0.02);
-            color = mix(vec3(1.0), color, fog_intensity);
+            float fog_intensity = expFog(total_distance_traveled, 0.03);
+            color = mix(vec3(1), color, fog_intensity);
 
-            // color = pow(color, vec3(1.0 / gamma));
-            // color += 0.1;
+            // color = color * 3.0 - 1.94;
+            // color = color * 2.0 - 1.0;
+            // color += 0.01;
+
+
+            // color *= vec3(1.0, 0.98, 0.95);
+
+            color = pow(color, vec3(1.0 / gamma));
             return color;
         }
 
@@ -154,7 +183,7 @@ vec3 rayMarch(in vec3 ro, in vec3 rd)
 void main(void){
     vec3 cameraPos = vec3(8.0);
     // cameraPos = (rotateY(time * 0.2) * vec4(cameraPos, 1.0)).xyz;
-    // light_position = (rotateY(time * 0.2) * vec4(light_position, 1.0)).xyz;
+    // light_position = (rotateY(time * 0.5) * vec4(light_position, 1.0)).xyz;
     pc camera = setCamera(45.0, cameraPos, center);
 
     vec3 color = rayMarch(camera.origin, camera.dir);

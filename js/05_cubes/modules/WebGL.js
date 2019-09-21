@@ -20,7 +20,7 @@ export default class Webgl extends _WebGL{
   
 
   render(){
-    this.uniforms.time.value = (new Date().getTime() - this.startTime) * 0.002;
+    this.uniforms.time.value = (new Date().getTime() - this.startTime) * 0.0008;
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
