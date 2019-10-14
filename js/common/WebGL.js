@@ -14,6 +14,9 @@ export default class WebGL{
     
     
         this.gl = this.$canvas.getContext('webgl', { antialias: false });
+
+
+        this.canvasSize = "small";
     
         
         this.resize();
@@ -53,6 +56,8 @@ export default class WebGL{
         };
 
         this.init();
+
+        this.setScaleBtn();
     }
 
     init(){
@@ -203,10 +208,44 @@ export default class WebGL{
     render(){
       this.mouse.render();
       this.wheel.render();
+    }
 
+    setScaleBtn(){
+      const $btn = document.getElementById("btn");
+      const $wrapper = document.getElementById("wrapper");
+
+      $btn.addEventListener("click", () => {
+        if(this.canvasSize === "small"){
+
+          $wrapper.classList.remove("current_small");
+          $wrapper.classList.add("current_big");
+
+          this.canvasSize = "big";
+        } else if(this.canvasSize === "big"){
+
+          $wrapper.classList.add("current_small");
+          $wrapper.classList.remove("current_big");
+          this.canvasSize = "small";
+        }
+
+        this.resize();
+      });
     }
 
     resize(){
+      if(this.canvasSize === "small"){
+        this.windowSize[0] = 720;
+        this.windowSize[1] = 480;
+
+        // this.gl.canvas.style.width = "720px";
+        // this.gl.canvas.style.height = "480px";
+
+
+        this.$canvas.width = this.windowSize[0];
+        this.$canvas.height = this.windowSize[1];
+
+        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+      } else {
         this.windowSize[0] = window.innerWidth;
         this.windowSize[1] = window.innerHeight;
 
@@ -214,5 +253,7 @@ export default class WebGL{
         this.$canvas.height = this.windowSize[1];
 
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+      }
+        
     }
 }

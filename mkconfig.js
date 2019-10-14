@@ -7,7 +7,7 @@ var config = {
 function getInfo (callback) {  
   fs.readdir('./js/', (err, files) => {
     files.forEach(file => {
-      if(file !== '.DS_Store' && file !== "common") {
+      if(file !== '.DS_Store' && file !== "common" && file !== "utils") {
         config.files.push(file);
       }
     });
@@ -24,7 +24,6 @@ function setInfo() {
 
   fs.writeFile(filepath_1, fileContent_1, (err) => {
     if (err) throw err;
-      console.log("The file was succesfully saved!");
   }); 
 
   var filepath_2 = "./dist/config.json";
@@ -33,7 +32,6 @@ function setInfo() {
 
   fs.writeFile(filepath_2, fileContent_2, (err) => {
     if (err) throw err;
-      console.log("The file was succesfully saved!");
   }); 
 
 }
