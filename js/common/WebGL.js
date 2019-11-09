@@ -2,6 +2,8 @@ import commonFragmentShader from './glsl/common-func.frag';
 import Mouse from "./Mouse";
 import Wheel from "./Wheel";
 
+import includeReplacer from "./includeReplacer";
+
 export default class WebGL{
     constructor(props){
         this.props  = props;
@@ -12,13 +14,10 @@ export default class WebGL{
         this.$canvas.width = this.windowSize[0];
         this.$canvas.height = this.windowSize[1];
     
-    
         this.gl = this.$canvas.getContext('webgl', { antialias: false });
-
 
         this.canvasSize = "small";
     
-        
         this.resize();
 
         this.mouse = new Mouse({
@@ -61,7 +60,7 @@ export default class WebGL{
     }
 
     init(){
-      const fragment = commonFragmentShader + this.props.fragmentShader;
+      const fragment = includeReplacer(this.props.fragmentShader);
         this.program = this.createProgram(
           this.createShader(this.props.vertexShader, 'vertex'), 
           this.createShader(fragment, 'fragment')

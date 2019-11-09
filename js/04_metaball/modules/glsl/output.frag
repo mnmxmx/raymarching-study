@@ -1,5 +1,4 @@
-
-// const vec3 center = vec3(0.0);
+#include <common>
 
 #define NUM_BLOBS 5
 const vec3 light_position = vec3(2000.0, -5000.0, 3000.0);

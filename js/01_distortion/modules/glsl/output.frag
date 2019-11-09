@@ -1,5 +1,4 @@
-
-// uniform vec2  mouse;
+#include <common>
 
 const vec3 center = vec3(0.0);
 const float radius = 1.0;
