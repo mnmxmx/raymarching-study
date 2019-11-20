@@ -1,0 +1,32 @@
+{
+  "name": "raymarching-study",
+  "version": "1.0.0",
+  "main": "gulpfile.js",
+  "scripts": {
+    "start": "node mkconfig.js && cross-env gulp"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.3.3",
+    "@babel/preset-env": "^7.3.1",
+    "babelify": "^10.0.0",
+    "browser-sync": "^2.13.0",
+    "browserify": "^16.2.3",
+    "cross-env": "^2.0.0",
+    "event-stream": "^4.0.1",
+    "file-system": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-ejs": "^3.3.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-watch": "^4.3.9",
+    "i": "^0.3.6",
+    "npm": "^6.13.1",
+    "require-dir": "^0.3.0",
+    "run-sequence": "^2.2.1",
+    "stringify": "^5.2.0",
+    "vinyl-source-stream": "^2.0.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

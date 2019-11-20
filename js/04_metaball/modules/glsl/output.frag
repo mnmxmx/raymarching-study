@@ -54,8 +54,6 @@ vec4 mapTheWorld(in vec3 p)
 
         float h = smoothUnion_h(totalDb, sphere_1, smoothIntensity);
 
-        
-
         totalDb = mix( sphere_1, totalDb, h ) - smoothIntensity *h * (1.0-h); 
 
         totalColor = mix(blobs[i].color, totalColor, h);
@@ -77,12 +75,6 @@ vec3 calculateNormal(in vec3 p)
 
     return normalize(normal);
 }
-
-// const vec3 hemiLight_g = vec3(256.0, 246.0, 191.0) / vec3(256.0);
-// const vec3 hemiLight_s_1 = vec3(0.9,0.8,0.8);
-// const vec3 hemiLight_s_2 = vec3(0.9,0.7,0.7);
-// const vec3 hemiLightPos_1 = vec3(-100.0, -100.0, 100.0);
-// const vec3 hemiLightPos_2 = vec3(-100.0, 100.0, -100.0);
 
 const vec3 dirLight = vec3(1.0);
 const vec3 dirLightPos = vec3(-4, 6, -10);
@@ -118,12 +110,6 @@ vec3 rayMarch(in vec3 ro, in vec3 rd)
         {
             // return vec3(1.0, 0.0, 0.0);
             vec3 normal = calculateNormal(currentPos);
-
-            // vec3 directionToLight = normalize(currentPos - light_position);
-
-            // vec3 hemiColor = vec3(0.0);
-            // hemiColor += calcIrradiance_hemi(normal, hemiLightPos_1, hemiLight_g, hemiLight_s_1) * 0.5;
-            // hemiColor += calcIrradiance_hemi(normal, hemiLightPos_2, hemiLight_g, hemiLight_s_2) * 0.5;
 
             vec3 dirColor = calcIrradiance_dir(normal, dirLightPos, dirLight);
 

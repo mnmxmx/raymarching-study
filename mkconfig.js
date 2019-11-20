@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('file-system');
 
 var config = {
   files: []
@@ -18,7 +18,6 @@ function getInfo (callback) {
 
 function setInfo() {
   var filepath_1 = "./config.js";
-  
 
   var fileContent_1 = 'module.exports = ' + JSON.stringify(config);
 

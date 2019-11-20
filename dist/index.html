@@ -75,7 +75,6 @@
     xhr.send();
 
     function setData(data){
-      console.log(data.files);
       var $ul = document.getElementById('list');
 
       for(let i = 0; i < data.files.length; i++){
@@ -84,7 +83,7 @@
         var $a = document.createElement('a');
         $li.appendChild($a);
         $a.innerText = name;
-        $a.href= './' + name;
+        $a.href= './' + name + "/";
         $ul.appendChild($li);
       }
 
