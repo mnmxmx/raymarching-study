@@ -19,10 +19,6 @@ vec3 trans(vec3 p, float interval){
 float mapTheWorld(in vec3 p)
 {
     vec3 cubeSize = vec3(1.1);
-    // vec3 baseSize = vec3(100.0, 0.001, 100.0);
-    // float base = sdBox(p, center, baseSize);
-
-    // p.y -= cubeSize.y + 0.3;
 
     p = (rotateY(0.2) * vec4(p, 1.0)).xyz;
 
@@ -91,23 +87,10 @@ vec3 calcColor(vec3 pos, vec3 normal){
 
     diffuseIntensity = 0.2 + 0.8 * diffuseIntensity;
 
-    // float shadow = getSoftShadow(pos + normal * 0.001, light_position, 2.0);
-    // diffuseIntensity = min(shadow, diffuseIntensity);
-
-    // vec4 ao = genAmbientOcclusion(pos, normal);
-    // // float anbient
-    // diffuseIntensity *= mix((1.0 - ao.x * ao.w * 2.0), 1.0, lighting);
-    // diffuseIntensity = max(0.0, diffuseIntensity);
-
-    // diffuseIntensity *= (1.0 - (0.41 - pos.y) * 0.4);
-
-    // diffuseIntensity = min(1.0, diffuseIntensity);
-
-    // diffuseIntensity = max(0.0, diffuseIntensity);
-
-    // diffuseIntensity = min(1.0, diffuseIntensity);
+    diffuseIntensity *= (1.0 - (0.41 - pos.y) * 0.4);
 
     color = mix(shadowColor, cubeColor, diffuseIntensity);
+    
 
     return color;
 }
@@ -121,7 +104,6 @@ vec3 voxelTrace(vec3 ro, vec3 rd, out bool hit, out vec3 hitNormal){
     
     vec3 hitVoxel = voxel;
     
-	
     hit = false;
 
     float hitT = 0.0;
@@ -130,6 +112,7 @@ vec3 voxelTrace(vec3 ro, vec3 rd, out bool hit, out vec3 hitNormal){
         if (d <= 0.0 && !hit) {
             hit = true;
             hitVoxel = voxel;
+            
             break;
         }
 
@@ -164,11 +147,8 @@ vec3 voxelTrace(vec3 ro, vec3 rd, out bool hit, out vec3 hitNormal){
 
 void main(void){
     vec3 cameraPos = vec3(5.0);
-    // cameraPos = (rotateY(time * 0.2) * vec4(cameraPos, 1.0)).xyz;
-    // light_position = (rotateY(time * 0.5) * vec4(light_position, 1.0)).xyz;
     pc camera = setCamera(60.0, cameraPos, center);
 
-    // vec3 color = rayMarch(camera.origin, camera.dir);
 
     vec3 norm;
     bool hit;

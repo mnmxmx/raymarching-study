@@ -67,19 +67,10 @@ mat4 rotateZ(float theta) {
     );
 }
 
-float sdPlaneX(in vec3 p, in float x)
+float sdPlane( vec3 p, vec4 n )
 {
-    return distance(p,vec3(x,p.y,p.z));
-}
-
-float sdPlaneY(in vec3 p, in float y)
-{
-    return distance(p,vec3(p.x,y,p.z));
-}
-
-float sdPlaneZ(in vec3 p, in float z)
-{
-    return distance(p,vec3(p.x,p.y,z));
+  // n must be normalized
+  return dot(p, n.xyz) + n.w;
 }
 
 

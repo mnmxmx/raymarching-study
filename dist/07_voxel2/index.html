@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+  <meta charset="utf-8">
+  <title>07_voxel2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta http-equiv="Content-Language" content="ja">
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <style type="text/css">
+    body{
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .icons{
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      bottom: 20px;
+      right: 20px;
+    }
+
+    .wrapper{
+      width: 100vw;
+      height: 100vh;
+    }
+
+    canvas{
+      box-shadow: -2px 2px 49px 0px rgba(0,0,0,0.05);
+      width: 720px;
+      height: 480px;
+    }
+
+    .wrapper.current_small{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .wrapper.current_small canvas{
+      width: 720px;
+      height: 480px;
+    }
+
+    .wrapper.current_big canvas{
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .icons .big,
+    .icons .small
+    {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center center;
+      cursor: pointer;
+    }
+
+    .icons .big{
+      background-image: url(../img/big.svg);
+    }
+
+    .icons .small{
+      background-image: url(../img/small.svg);
+    }
+
+    .current_big .icons .big{
+      display: none;
+    }
+
+    .current_small .icons .small{
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper current_small" id="wrapper">
+  <canvas id="canvas"></canvas>
+  <div class="icons" id="btn">
+    <div class="big"></div>
+    <div class="small"></div>
+  </div>
+</div>
+<script src="./main.min.js" type="text/javascript"></script>
+</body>
+</html>
