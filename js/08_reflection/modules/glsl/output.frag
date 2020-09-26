@@ -102,13 +102,13 @@ vec3 rayMarch(vec3 ro, in vec3 rd)
             }
 
             float diffuseIntensity = (dot(normal, directionToLight)) * 0.5 + 0.5;
-            diffuseIntensity = pow(diffuseIntensity, 10.0) * 6.0; 
+            diffuseIntensity = pow(diffuseIntensity, 10.0) * 4.0; 
 
-            float ambient = 0.3 + (1.0 - fog_intensity) * 0.1;
+            float ambient = 0.2 + (1.0 - fog_intensity) * 0.3;
 
             diffuseIntensity = ambient + diffuseIntensity * (1.0 - ambient);
 
-            vec3 sp = (currentPos + radius - 0.11) / 4.0;
+            vec3 sp = floor((currentPos + radius - 0.11) / 4.0);
 
             float cr = sin((sp.z + sp.y + sp.x) * 0.7) * 0.5 + 0.5;
             cr *= 0.5;
@@ -174,9 +174,9 @@ void main(void){
     vec3 _cp = currentPos;
     vec3 newColor = rayMarch(currentPos, ray);
     float reflectDistance = length(currentPos - _cp);
-    float refFog = max(0.0, expFog(reflectDistance, 0.02));
+    float refFog = max(0.0, expFog(reflectDistance, 0.01));
     shaded_color = mix(shaded_color, newColor, alpha * refFog);
-    alpha *= 0.45;
+    alpha *= 0.5;
     ray = normalize(reflect(ray, normal));
     currentPos += normal * MINIMUM_HIT_DISTANCE * 2.0;
     // alphaScale += 1.0;
