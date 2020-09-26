@@ -2,7 +2,7 @@
 
 const vec3 center = vec3(0.0);
 const float radius = 1.0;
-const vec3 light_position = vec3(2000.0, 5000.0, 3000.0);
+const vec3 light_position = vec3(2000.0, -5000.0, 3000.0);
 
 const int NUMBER_OF_STEPS = 90;
 const float MINIMUM_HIT_DISTANCE = 0.01;
@@ -49,8 +49,8 @@ float sdRoundBox_repeat( vec3 p, vec3 c, vec3 b, float r )
 float mapTheWorld(in vec3 p)
 {
     const float disS = 2.0;
-    float displacement = sin(disS * p.x + time) * sin(disS * p.y + time) * sin(disS * p.z + time);
-    displacement *= 0.01;
+    float displacement = sin(disS * p.x + time) * sin(disS * p.y+ time) * sin(disS * p.z + time);
+    displacement *= 0.02;
     
     // samplePoint = (rotateY(time) * vec4(samplePoint, 1.0)).xyz;
         
@@ -98,21 +98,25 @@ vec3 rayMarch(vec3 ro, in vec3 rd)
             // it as an RGB color, let's remap it to the range
             // 0..1
             if(iteration == 0){
-                fog_intensity = max(0.0, expFog(total_distance_traveled, 0.04));
+                fog_intensity = max(0.0, expFog(total_distance_traveled, 0.03));
             }
 
             float diffuseIntensity = (dot(normal, directionToLight)) * 0.5 + 0.5;
-            diffuseIntensity = pow(diffuseIntensity, 10.0); 
+            diffuseIntensity = pow(diffuseIntensity, 10.0) * 6.0; 
 
-            diffuseIntensity = 0.5 + diffuseIntensity * 0.5;
+            float ambient = 0.3 + (1.0 - fog_intensity) * 0.1;
 
-            vec3 sp = floor((currentPos + radius - 0.11) / 8.0 );
+            diffuseIntensity = ambient + diffuseIntensity * (1.0 - ambient);
+
+            vec3 sp = (currentPos + radius - 0.11) / 4.0;
 
             float cr = sin((sp.z + sp.y + sp.x) * 0.7) * 0.5 + 0.5;
             cr *= 0.5;
 
-            vec3 scolor = vec3(cr + 0.6, 0.5 + fog_intensity * 0.5, 0.8);
+            vec3 scolor = vec3(cr + 0.6, 0.2 + fog_intensity * 0.8, 1.0);
             scolor = hsv2rgb(scolor);
+
+            // diffuseIntensity *= 2.0;
 
             vec3 color = mix(scolor * 0.4, (scolor * 2.0), diffuseIntensity);
 
@@ -143,13 +147,13 @@ void main(void){
 //   bgc =  mix(bgColor, bgColor2, st.y * 0.5 + 0.5);
 
 
-  vec3 camera_position = vec3(0.0, wheel * 0.01 + time, 0.0);
+  vec3 camera_position = vec3(time, wheel * 0.01 + time, 0.0);
   vec3 ro = camera_position;  // ray's origin
   vec3 rd = normalize(vec3(st, 2.0));  // ray's direction
  
   float camera_rotation = time * 0.1 + PI / 4.0; 
 
-  ro = (rotateY(camera_rotation) * vec4(ro, 1.0)).xyz;
+//   ro = (rotateY(camera_rotation) * vec4(ro, 1.0)).xyz;
   rd = (rotateY(-camera_rotation) * vec4(rd, 1.0)).xyz;
 
   ro.y += time;
@@ -170,11 +174,11 @@ void main(void){
     vec3 _cp = currentPos;
     vec3 newColor = rayMarch(currentPos, ray);
     float reflectDistance = length(currentPos - _cp);
-    float refFog = max(0.0, expFog(reflectDistance, 0.01));
+    float refFog = max(0.0, expFog(reflectDistance, 0.02));
     shaded_color = mix(shaded_color, newColor, alpha * refFog);
-    alpha *= 0.4;
+    alpha *= 0.45;
     ray = normalize(reflect(ray, normal));
-    currentPos += normal * MINIMUM_HIT_DISTANCE * 10.0;
+    currentPos += normal * MINIMUM_HIT_DISTANCE * 2.0;
     // alphaScale += 1.0;
 
     if (!hit) {
