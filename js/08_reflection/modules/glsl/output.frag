@@ -2,7 +2,7 @@
 
 const vec3 center = vec3(0.0);
 const float radius = 1.0;
-const vec3 light_position = vec3(2000.0, -5000.0, 3000.0);
+const vec3 light_position = vec3(2000.0, 5000.0, 3000.0);
 
 const int NUMBER_OF_STEPS = 90;
 const float MINIMUM_HIT_DISTANCE = 0.01;
@@ -50,7 +50,7 @@ float mapTheWorld(in vec3 p)
 {
     const float disS = 2.0;
     float displacement = sin(disS * p.x + time) * sin(disS * p.y + time) * sin(disS * p.z + time);
-    displacement *= 0.02;
+    displacement *= 0.01;
     
     // samplePoint = (rotateY(time) * vec4(samplePoint, 1.0)).xyz;
         
@@ -97,22 +97,26 @@ vec3 rayMarch(vec3 ro, in vec3 rd)
             // the range -1..1, so for the purposes of visualizing
             // it as an RGB color, let's remap it to the range
             // 0..1
+            if(iteration == 0){
+                fog_intensity = max(0.0, expFog(total_distance_traveled, 0.04));
+            }
+
             float diffuseIntensity = (dot(normal, directionToLight)) * 0.5 + 0.5;
-            // diffuseIntensity = pow(diffuseIntensity, 2.0);
+            diffuseIntensity = pow(diffuseIntensity, 10.0); 
+
+            diffuseIntensity = 0.5 + diffuseIntensity * 0.5;
 
             vec3 sp = floor((currentPos + radius - 0.11) / 8.0 );
 
             float cr = sin((sp.z + sp.y + sp.x) * 0.7) * 0.5 + 0.5;
             cr *= 0.5;
 
-            vec3 scolor = vec3(cr + 0.6, 0.8, 0.8);
+            vec3 scolor = vec3(cr + 0.6, 0.5 + fog_intensity * 0.5, 0.8);
             scolor = hsv2rgb(scolor);
 
             vec3 color = mix(scolor * 0.4, (scolor * 2.0), diffuseIntensity);
 
-            if(iteration == 0){
-                fog_intensity = max(0.0, expFog(total_distance_traveled, 0.04));
-            }
+            
 
             color = mix(bgc, color, fog_intensity);
 
