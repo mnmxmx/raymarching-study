@@ -18,7 +18,6 @@ export default class Webgl extends _WebGL{
 
   }
   
-
   render(){
     this.uniforms.time.value = (new Date().getTime() - this.startTime) * 0.0008;
 
@@ -31,8 +30,6 @@ export default class Webgl extends _WebGL{
 
     requestAnimationFrame(this.render.bind(this));
   }
-
-  
 
   resize(){
     super.resize();
